@@ -6,7 +6,7 @@ type Plane struct {
 	material Material
 }
 
-func CreatePlane(point, normal Vector3, material Material) SceneObject {
+func CreatePlane(point, normal Vector3, material Material) Shape {
 	return &Plane{point, normal.Normalize(), material}
 }
 

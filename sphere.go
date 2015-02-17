@@ -8,7 +8,7 @@ type Sphere struct {
 	material Material
 }
 
-func CreateSphere(center Vector3, radius float64, material Material) SceneObject {
+func CreateSphere(center Vector3, radius float64, material Material) Shape {
 	return &Sphere{center, radius, material}
 }
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"math"
-	// "fmt"
 )
 
 type Raytracer struct {
@@ -43,7 +42,7 @@ func RecursiveTrace(ray *Ray, scene *Scene, depth int) Color {
 		p := hit.point
 		n := hit.object.Normal(p)
 
-		R, T := SchlickApproximation(1.0, objMaterial.index, n, ray.direction)
+		R, T := FresnelConductor(objMaterial.index, objMaterial.absorption, n, ray.direction)
 
 		reflectedRay := ray.Reflect(p, n)
 		reflectedColor := RecursiveTrace(&reflectedRay, scene, depth-1)
@@ -59,28 +58,28 @@ func RecursiveTrace(ray *Ray, scene *Scene, depth int) Color {
 		d := ray.direction
 		n := hit.object.Normal(p)
 
-		var ni, nt float64
+		var etai, etat float64
 		var reflectedRay, refractedRay Ray
 		k := objMaterial.color
 
 		if d.Dot(n) < 0 {
-			ni = 1.0
-			nt = objMaterial.index
+			etai = 1.0
+			etat = objMaterial.index
 		} else {
-			nt = objMaterial.index
-			ni = 1.0
+			etat = objMaterial.index
+			etai = 1.0
 			n = n.Mul(-1)
-			exp := math.Exp(-0.05*hit.t)	// TODO(tizian): Beer's law coefficients?
+			exp := math.Exp(-0.05 * hit.t)	// TODO(tizian): Beer's law coefficients?
 			k = Color{exp, exp, exp}
 		}
 
 		reflectedRay = ray.Reflect(p, n)
-		refractedRay, _ = ray.Refract(p, n, ni, nt)
+		refractedRay, _ = ray.Refract(p, n, etai, etat)
 
 		reflectedColor := RecursiveTrace(&reflectedRay, scene, depth-1)
 		refractedColor := RecursiveTrace(&refractedRay, scene, depth-1)
 
-		R, T := SchlickApproximation(ni, nt, n, d)
+		R, T := FresnelDielectric(etai, etat, n, d)
 
 		return k.MulC(reflectedColor.Mul(R).Add(refractedColor.Mul(T)))
 	}
@@ -89,124 +88,63 @@ func RecursiveTrace(ray *Ray, scene *Scene, depth int) Color {
 	return ambientColor.Add(diffuseAndSpecularColor)
 }
 
-func SchlickApproximation(ni, nt float64, n, i Vector3) (float64, float64) {
-	R0 := (nt - ni) / (nt + ni)
-	R0 = R0 * R0
-	cosX := -n.Dot(i)
+func FresnelDielectric(etai, etat float64, n, i Vector3) (R, T float64) {
+	eta := etai / etat
+	cosi := -n.Dot(i)
+	sint2 := eta * eta * (1 - cosi * cosi)
+	if sint2 > 1 {
+		return 1, 0 	// TIR
+	}
 
-	if ni > nt {
-		inv_eta := ni / nt
-		sinT2 := inv_eta * inv_eta * (1 - cosX * cosX)
-		if sinT2 > 1 {
+	cost := math.Sqrt(1 - sint2)
+	Rparl := (etat * cosi - etai * cost) / (etat * cosi + etai * cost)
+	Rperp := (etai * cosi - etat * cost) / (etai * cosi + etat * cost)
+
+	R = (Rparl * Rparl + Rperp * Rperp) / 2
+	T = 1 - R
+
+	return
+}
+
+func FresnelConductor(eta, k float64, n, i Vector3) (R, T float64) {
+	cosi := -n.Dot(i)
+	tmp := (eta * eta + k * k)
+	Rparl2 := (tmp - (2 * eta * cosi) + 1) / (tmp + (2 * eta * cosi) + 1)
+	tmp_f := eta * eta + k * k
+	Rperp2 := (tmp_f - (2 * eta * cosi) + cosi * cosi) / (tmp_f + (2 * eta * cosi) + cosi * cosi)
+
+	R = (Rparl2 + Rperp2) / 2
+	T = 1 - R
+
+	return
+}
+
+func FresnelNoOp() (R, T float64) {
+	R = 1
+	T = 0
+
+	return
+}
+
+func SchlickApproximation(etai, etat float64, n, i Vector3) (R, T float64) {
+	R0 := (etat - etai) / (etat + etai)
+	R0 = R0 * R0
+	cosi := -n.Dot(i)
+
+	if etai > etat {
+		eta := etai / etat
+		sint2 := eta * eta * (1 - cosi * cosi)
+		if sint2 > 1 {
 			return 1, 0	// TIR
 		}
-		cosX = math.Sqrt(1 - sinT2)
+		cosi = math.Sqrt(1 - sint2)
 	}
 
-	R := R0 + (1 - R0) * math.Pow(1 - cosX, 5)
-	T := 1 - R
+	R = R0 + (1 - R0) * math.Pow(1 - cosi, 5)
+	T = 1 - R
 
-	return R, T
+	return
 }
-
-/*
-// Recursive ray tracing function
-func RecursiveTrace(ray *Ray, scene *Scene, depth int) Color {
-
-	// Intersect the ray to scene elements and determine the closest one
-	hit, ok := scene.Intersect(ray)
-
-	if !ok {
-		return Color{}	// Ray doesn't hit any object -> Return black background color
-	}
-
-	objectMaterial := hit.object.Material(hit.point)
-
-	color := Color{}
-
-	ambient := GlobalAmbientTerm(&hit)
-	color = color.Add(ambient)
-	visibleLights := scene.VisibleLights(hit.point)
-
-	// fmt.Println(len(visibleLights))
-
-	for _, light := range visibleLights {
-		phong := PhongIllumination(&hit, &light.position, &ray.origin)
-		color = color.Add(phong)	// TODO(tizian): light colors
-	}
-
-	if objectMaterial.specular && depth > 0 {
-		p := hit.point
-		n := hit.object.Normal(p)
-
-		reflectedRay := ray.Reflect(p, n)
-		Ls := RecursiveTrace(&reflectedRay, scene, depth-1)
-		color = Ls.MulC(hit.object.Color(p))
-
-	} else if objectMaterial.transparent && depth > 0 {
-		p := hit.point
-		d := ray.direction
-		n := hit.object.Normal(p)
-
-		material := hit.object.Material(p)
-
-		var eta1, eta2 float64
-		var reflectedRay, refractedRay Ray
-
-		if d.Dot(n) < 0 {
-			eta1 = 1.0
-			eta2 = material.index
-		} else {
-			eta1 = material.index
-			eta2 = 1.0
-			n = n.Mul(-1)
-		}
-
-		reflectedRay = ray.Reflect(p, n)
-		refractedRay, ok = ray.Refract(p, n, eta1, eta2)
-
-		if !ok {
-			return RecursiveTrace(&reflectedRay, scene, depth-1)
-		}
-
-		reflectedColor := RecursiveTrace(&reflectedRay, scene, depth-1)
-		refractedColor := RecursiveTrace(&refractedRay, scene, depth-1)
-
-		return reflectedColor.Mul(0.3).Add(refractedColor.Mul(0.7))
-
-		// var cos float64
-		if d.Dot(n) < 0 {	// from outside of normal
-			reflectedRay = ray.Reflect(p, n)
-			refractedRay, _ = ray.Refract(p, n, 1.0, material.index)
-			// cos = d.Dot(n)
-		} else {	// from inside of normal
-			n = n.Mul(-1)
-			reflectedRay = ray.Reflect(p, n)
-			refractedRay, ok = ray.Refract(p, n, material.index, 1.0)
-			if ok {
-				// cos = refractedRay.direction.Dot(n)
-			} else {
-				// return RecursiveTrace(&reflectedRay, scene, depth-1)
-			}
-		}
-		// R0 := (material.index-1)/(material.index+1)
-		// R0 = R0*R0
-		// R := R0 + (1-R0) * math.Pow(1-cos, 5)
-
-		reflectedColor := RecursiveTrace(&reflectedRay, scene, depth-1)
-		refractedColor := RecursiveTrace(&refractedRay, scene, depth-1)
-
-		// return reflectedColor.Mul(R).Add(refractedColor.Mul(1-R))
-		return refractedColor
-		return reflectedColor.Mul(0.5).Add(refractedColor.Mul(0.5))
-
-
-	}
-
-
-	return color
-}
-*/
 
 func GlobalAmbientTerm(hit *Hit) Color {
 	return hit.object.Color(hit.point).Mul(0.4)	// TODO(tizian): Create GlobalAmbientIntensity variable

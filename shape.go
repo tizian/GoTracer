@@ -1,6 +1,6 @@
 package main
 
-type SceneObject interface {
+type Shape interface {
 	Intersect(*Ray) float64
 	Normal(Vector3) Vector3
 	Color(Vector3) Color

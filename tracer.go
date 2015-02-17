@@ -36,7 +36,7 @@ func main() {
 	scene.AddLight(PointLight{Vector3{0, 8, 0}})
 	*/
 
-	// gold := SpecularMaterial(ColorFromInts(185, 148, 69), 5)
+	gold := SpecularMaterial(ColorFromInts(185, 148, 69), 2, 3)
 	// glass := TransparentMaterial(Color{1, 1, 1}, 1.5)
 	blueGlass := TransparentMaterial(Color{0.87, 0.87, 1}, 1.5)
 	redGlass := TransparentMaterial(Color{1, 0.87, 0.87}, 1.5)
@@ -47,6 +47,14 @@ func main() {
 	white := DiffuseMaterial(Color{0.740, 0.742, 0.734})
 	red := DiffuseMaterial(Color{0.366, 0.037, 0.042})
 	green := DiffuseMaterial(Color{0.163, 0.409, 0.083})
+	// yellow := DiffuseMaterial(Color{0.5, 0.5, 0})
+
+	// triangle := Triangle{}
+	// triangle.v1 = Vector3{-10, -10, -9.99}
+	// triangle.v2 = Vector3{0, 10, -9.99}
+	// triangle.v3 = Vector3{10, -10, -9.99}
+	// triangle.n1 = Vector3{0, 0, 1}
+	// triangle.material = yellow
 
 	scene := Scene{}
 	scene.AddObject(CreatePlane(Vector3{0, -10, 0}, Vector3{0, 1, 0}, white))
@@ -56,6 +64,8 @@ func main() {
 	scene.AddObject(CreatePlane(Vector3{-10, 0, 0}, Vector3{1, 0, 0}, green))
 	scene.AddObject(CreatePlane(Vector3{10, 0, 0}, Vector3{-1, 0, 0}, red))
 
+	// scene.AddObject(&triangle)
+
 	/*
 	scene.AddObject(CreateSphere(Vector3{0, -6, 0}, 4, glass))
 	scene.AddObject(CreateSphere(Vector3{0, 0, 0}, 2, glass))
@@ -64,21 +74,19 @@ func main() {
 	scene.AddObject(CreateSphere(Vector3{0, 5.25, 0}, 0.25, glass))
 	*/
 
-	scene.AddObject(CreateSphere(Vector3{0, -8, 0}, 2, yellowGlass))
-	scene.AddObject(CreateSphere(Vector3{0, -4, 0}, 2, greenGlass))
-	scene.AddObject(CreateSphere(Vector3{0, 0, 0}, 2, blueGlass))
-	scene.AddObject(CreateSphere(Vector3{0, 4, 0}, 2, purpleGlass))
-	scene.AddObject(CreateSphere(Vector3{0, 8, 0}, 2, redGlass))
+	scene.AddObject(CreateSphere(Vector3{-4, -8, 0}, 2, yellowGlass))
+	scene.AddObject(CreateSphere(Vector3{-4, -4, 0}, 2, greenGlass))
+	scene.AddObject(CreateSphere(Vector3{-4, 0, 0}, 2, blueGlass))
+	scene.AddObject(CreateSphere(Vector3{-4, 4, 0}, 2, purpleGlass))
+	scene.AddObject(CreateSphere(Vector3{-4, 8, 0}, 2, redGlass))
 
-	/*
-	scene.AddObject(CreateSphere(Vector3{0, -8, 0}, 2, gold))
-	scene.AddObject(CreateSphere(Vector3{0, -4, 0}, 2, gold))
-	scene.AddObject(CreateSphere(Vector3{0, 0, 0}, 2, gold))
-	scene.AddObject(CreateSphere(Vector3{0, 4, 0}, 2, gold))
-	scene.AddObject(CreateSphere(Vector3{0, 8, 0}, 2, gold))
-	*/
+	scene.AddObject(CreateSphere(Vector3{4, -8, 0}, 2, gold))
+	scene.AddObject(CreateSphere(Vector3{4, -4, 0}, 2, gold))
+	scene.AddObject(CreateSphere(Vector3{4, 0, 0}, 2, gold))
+	scene.AddObject(CreateSphere(Vector3{4, 4, 0}, 2, gold))
+	scene.AddObject(CreateSphere(Vector3{4, 8, 0}, 2, gold))
 
-	scene.AddLight(PointLight{Vector3{8, 8, 8}})
+	scene.AddLight(PointLight{Vector3{0, 6, 0}})
 
 	// Camera
 	// camera := LookAt(Vector3{0, 0, -20}, Vector3{0, 0, 1}, Vector3{0, 1, 0}, 65)

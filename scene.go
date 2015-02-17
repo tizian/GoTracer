@@ -3,11 +3,11 @@ package main
 // import "fmt"
 
 type Scene struct {
-	objects []SceneObject
+	objects []Shape
 	lights []PointLight
 }
 
-func (s *Scene) AddObject(obj SceneObject) {
+func (s *Scene) AddObject(obj Shape) {
 	s.objects = append(s.objects, obj)
 }
 
