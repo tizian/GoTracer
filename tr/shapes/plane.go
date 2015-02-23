@@ -1,4 +1,6 @@
-package main
+package shapes
+
+import . "github.com/tizian/tracer/tr"
 
 type Plane struct {
 	point Vector3
@@ -11,12 +13,12 @@ func CreatePlane(point, normal Vector3, material Material) Shape {
 }
 
 func (p *Plane) Intersect(r *Ray) float64 {
-	denom := r.direction.Dot(p.normal)
+	denom := r.Direction.Dot(p.normal)
 
 	if denom > EPS {
 		return INF
 	}
-	t := p.point.Sub(r.origin).Dot(p.normal) / denom
+	t := p.point.Sub(r.Origin).Dot(p.normal) / denom
 	if t < EPS {
 		return INF
 	}
@@ -24,7 +26,7 @@ func (p *Plane) Intersect(r *Ray) float64 {
 }
 
 func (p *Plane) Color(v Vector3) Color {
-	return p.material.color
+	return p.material.Color()
 }
 
 func (p *Plane) Normal(v Vector3) Vector3 {

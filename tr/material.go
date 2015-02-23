@@ -1,4 +1,4 @@
-package main
+package tr
 
 type Material struct {
 	color Color
@@ -18,4 +18,8 @@ func SpecularMaterial(c Color, index, absorption float64) Material {
 
 func TransparentMaterial(c Color, index float64) Material {
 	return Material{c, index, -1, true, false}
+}
+
+func (m *Material) Color() Color {
+	return m.color
 }

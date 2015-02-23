@@ -1,4 +1,4 @@
-package main
+package tr
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ func (c PerspectiveCamera) String() string {
 	return fmt.Sprintf("Perspective")
 }
 
-func LookAt(pos Vector3, look Vector3, up Vector3, fov float64) PerspectiveCamera {
+func LookAt(pos, look, up Vector3, fov float64) PerspectiveCamera {
 	p := pos
 	f := look.Sub(pos).Normalize()
 	u := up.Normalize()
@@ -27,7 +27,7 @@ func LookAt(pos Vector3, look Vector3, up Vector3, fov float64) PerspectiveCamer
 	return PerspectiveCamera{p, f, u, r, c}
 }
 
-func (c *PerspectiveCamera) CastRay(x int, y int, w int, h int, dx, dy float64) Ray {
+func (c *PerspectiveCamera) CastRay(x, y, w, h int, dx, dy float64) Ray {
 	height := 2*c.cFov
 	width := float64(w) * height / float64(h)
 	pixelDelta := width / float64(w)

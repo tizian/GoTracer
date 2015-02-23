@@ -1,4 +1,4 @@
-package  main
+package tr
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 )
 
 type Color struct {
-	r, g, b float64
+	R, G, B float64
 }
 
 func ColorFromHex(x int) Color {
@@ -24,43 +24,43 @@ func ColorFromInts(r, g, b uint8) Color {
 }
 
 func (c *Color) ToInts() (r, g, b uint8) {
-	r = uint8(c.r * 255)
-	g = uint8(c.g * 255)
-	b = uint8(c.b * 255)
+	r = uint8(c.R * 255)
+	g = uint8(c.G * 255)
+	b = uint8(c.B * 255)
 	return
 }
 
 func (c Color) String() string {
-	return fmt.Sprintf("(%f, %f, %f)", c.r, c.g, c.b)
+	return fmt.Sprintf("(%f, %f, %f)", c.R, c.G, c.B)
 }
 
 func (c Color) Clamp() Color {
-	r := math.Max(0.0, math.Min(1.0, c.r))
-	g := math.Max(0.0, math.Min(1.0, c.g))
-	b := math.Max(0.0, math.Min(1.0, c.b))
+	r := math.Max(0.0, math.Min(1.0, c.R))
+	g := math.Max(0.0, math.Min(1.0, c.G))
+	b := math.Max(0.0, math.Min(1.0, c.B))
 	return Color{r, g, b}
 }
 
 func (c Color) Add(d Color) Color {
-	return Color{c.r + d.r, c.g + d.g, c.b + d.b}
+	return Color{c.R + d.R, c.G + d.G, c.B + d.B}
 }
 
 func (c Color) Sub(d Color) Color {
-	return Color{c.r - d.r, c.g - d.g, c.b - d.b}
+	return Color{c.R - d.R, c.G - d.G, c.B - d.B}
 }
 
 func (c Color) Mul(a float64) Color {
-	return Color{c.r * a, c.g * a, c.b * a}
+	return Color{c.R * a, c.G * a, c.B * a}
 }
 
 func (c Color) Div(a float64) Color {
-	return Color{c.r / a, c.g / a, c.b / a}
+	return Color{c.R / a, c.G / a, c.B / a}
 }
 
 func (c Color) MulC(d Color) Color {
-	return Color{c.r * d.r, c.g * d.g, c.b * d.b}
+	return Color{c.R * d.R, c.G * d.G, c.B * d.B}
 }
 
 func (c Color) DivC(d Color) Color {
-	return Color{c.r / d.r, c.g / d.g, c.b / d.b}
+	return Color{c.R / d.R, c.G / d.G, c.B / d.B}
 }

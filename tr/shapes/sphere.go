@@ -1,6 +1,9 @@
-package main
+package shapes
 
-import "math"
+import (
+	"math"
+	. "github.com/tizian/tracer/tr"
+)
 
 type Sphere struct {
 	center Vector3
@@ -13,14 +16,14 @@ func CreateSphere(center Vector3, radius float64, material Material) Shape {
 }
 
 func (s *Sphere) Intersect(ray *Ray) float64 {
-	o := ray.origin
-	d := ray.direction
+	o := ray.Origin
+	d := ray.Direction
 	c := s.center
 	r := s.radius
 
-	A := d.x * d.x + d.y * d.y + d.z * d.z
-	B := 2 * (o.x * d.x - d.x * c.x + o.y * d.y - d.y * c.y + o.z * d.z - d.z * c.z)
-	C := (o.x * o.x - 2 * o.x * c.x + c.x * c.x) + (o.y * o.y - 2 * o.y * c.y + c.y * c.y) + (o.z * o.z - 2 * o.z * c.z + c.z * c.z) - r * r;
+	A := d.X * d.X + d.Y * d.Y + d.Z * d.Z
+	B := 2 * (o.X * d.X - d.X * c.X + o.Y * d.Y - d.Y * c.Y + o.Z * d.Z - d.Z * c.Z)
+	C := (o.X * o.X - 2 * o.X * c.X + c.X * c.X) + (o.Y * o.Y - 2 * o.Y * c.Y + c.Y * c.Y) + (o.Z * o.Z - 2 * o.Z * c.Z + c.Z * c.Z) - r * r;
 
 	discr := B * B - 4 * A * C
 	if discr < 0 {
@@ -45,7 +48,7 @@ func (s *Sphere) Intersect(ray *Ray) float64 {
 }
 
 func (s *Sphere) Color(v Vector3) Color {
-	return s.material.color
+	return s.material.Color()
 }
 
 func (s *Sphere) Normal(v Vector3) Vector3 {

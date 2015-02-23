@@ -1,14 +1,14 @@
-package main
+package tr
 
 // import "fmt"
 
 type Scene struct {
-	objects []Shape
-	lights []PointLight
+	objects []Shape		// TODO(tizian): Replace with abstract Acceleration Structure (Possible implementations: List, Grid, Octree, K-d Tree, BSP Tree)
+	lights []PointLight		// TODO(tizian): Eventually replace with abstract Light interface
 }
 
 func (s *Scene) AddObject(obj Shape) {
-	s.objects = append(s.objects, obj)
+	s.objects = append(s.objects, obj)	// TODO(tizian): If obj is triangle mesh: add individual triangles
 }
 
 func (s *Scene) AddLight(light PointLight) {
@@ -35,7 +35,6 @@ func (s *Scene) IntersectAny(r *Ray, maxDist float64) bool {
 	for _, obj := range s.objects {
 		t := obj.Intersect(r)
 		if t < maxDist && t > EPS {
-			// fmt.Println("Intersection!")
 			return true
 		}
 	}
@@ -51,15 +50,9 @@ func (s *Scene) VisibleLights(p Vector3) []PointLight {
 
 		lightOccluded := s.IntersectAny(&shadowRay, light.position.Sub(p).Length())
 
-		// fmt.Println(lightOccluded)
-
 		if !lightOccluded {
 			lights = append(lights, light)
 		}
-	}
-
-	if !(len(lights) == 1) {
-		// fmt.Println("hmm")
 	}
 
 	return lights

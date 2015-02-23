@@ -1,4 +1,4 @@
-package main
+package tr
 
 type Shape interface {
 	Intersect(*Ray) float64

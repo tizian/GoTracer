@@ -1,4 +1,4 @@
-package main
+package tr
 
 type Hit struct {
 	object Shape

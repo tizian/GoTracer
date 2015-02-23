@@ -1,4 +1,6 @@
-package main
+package shapes
+
+import . "github.com/tizian/tracer/tr"
 
 type Triangle struct {
 	v1, v2, v3 Vector3
@@ -7,7 +9,7 @@ type Triangle struct {
 }
 
 func (t *Triangle) Color(v Vector3) Color {
-	return t.material.color
+	return t.material.Color()
 }
 
 func (t *Triangle) Normal(v Vector3) Vector3 {
@@ -22,7 +24,7 @@ func (tri *Triangle) Intersect(ray *Ray) float64 {
 	// Möller-Trumbore intersection algorithm
 	e1 := tri.v2.Sub(tri.v1)
 	e2 := tri.v3.Sub(tri.v1)
-	P := ray.direction.Cross(e2)
+	P := ray.Direction.Cross(e2)
 	det := e1.Dot(P)
 
 	if det > -EPS && det < EPS {
@@ -31,7 +33,7 @@ func (tri *Triangle) Intersect(ray *Ray) float64 {
 
 	inv_det := 1 / det
 
-	T := ray.origin.Sub(tri.v1)
+	T := ray.Origin.Sub(tri.v1)
 	u := T.Dot(P) * inv_det
 
 	if u < 0 || u > 1 {
@@ -39,7 +41,7 @@ func (tri *Triangle) Intersect(ray *Ray) float64 {
 	}
 
 	Q := T.Cross(e1)
-	v := ray.direction.Dot(Q) * inv_det
+	v := ray.Direction.Dot(Q) * inv_det
 
 	if v < 0 || u + v > 1 {
 		return INF

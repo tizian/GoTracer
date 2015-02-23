@@ -1,15 +1,15 @@
-package main
+package tr
 
 import (
 	"math"
 )
 
 type Raytracer struct {
-	recursionDepth int
+	RecursionDepth int
 }
 
 func (rt *Raytracer) Trace(ray *Ray, scene *Scene) Color {
-	return RecursiveTrace(ray, scene, rt.recursionDepth).Clamp()
+	return RecursiveTrace(ray, scene, rt.RecursionDepth).Clamp()
 }
 
 // Recursive ray tracing function
@@ -28,7 +28,7 @@ func RecursiveTrace(ray *Ray, scene *Scene, depth int) Color {
 	visibleLights := scene.VisibleLights(hit.point)
 
 	for _, light := range visibleLights {
-		phong := PhongIllumination(&hit, &light.position, &ray.origin)
+		phong := PhongIllumination(&hit, &light.position, &ray.Origin)
 		diffuseAndSpecularColor = diffuseAndSpecularColor.Add(phong)	// TODO(tizian): light colors
 	}
 
@@ -42,7 +42,7 @@ func RecursiveTrace(ray *Ray, scene *Scene, depth int) Color {
 		p := hit.point
 		n := hit.object.Normal(p)
 
-		R, T := FresnelConductor(objMaterial.index, objMaterial.absorption, n, ray.direction)
+		R, T := FresnelConductor(objMaterial.index, objMaterial.absorption, n, ray.Direction)
 
 		reflectedRay := ray.Reflect(p, n)
 		reflectedColor := RecursiveTrace(&reflectedRay, scene, depth-1)
@@ -55,7 +55,7 @@ func RecursiveTrace(ray *Ray, scene *Scene, depth int) Color {
 
 	if objMaterial.transparent {
 		p := hit.point
-		d := ray.direction
+		d := ray.Direction
 		n := hit.object.Normal(p)
 
 		var etai, etat float64
