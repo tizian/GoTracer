@@ -2,7 +2,7 @@ package pixelSamplers
 
 import (
 	"fmt"
-	. "github.com/tizian/tracer/tr"
+	. "github.com/tizian/GoTracer/tr"
 )
 
 type GridPS struct {

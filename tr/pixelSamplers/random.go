@@ -3,7 +3,7 @@ package pixelSamplers
 import (
 	"fmt"
 	"math/rand"
-	. "github.com/tizian/tracer/tr"
+	. "github.com/tizian/GoTracer/tr"
 )
 
 type RandomPS struct {

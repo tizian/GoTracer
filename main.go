@@ -6,9 +6,9 @@ import (
 	"os"
 	"log"
 	"runtime"
-	"github.com/tizian/tracer/tr"
-	"github.com/tizian/tracer/tr/shapes"
-	"github.com/tizian/tracer/tr/pixelSamplers"
+	"github.com/tizian/GoTracer/tr"
+	"github.com/tizian/GoTracer/tr/shapes"
+	"github.com/tizian/GoTracer/tr/pixelSamplers"
 )
 
 var width int = 640

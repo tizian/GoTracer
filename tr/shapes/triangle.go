@@ -1,6 +1,6 @@
 package shapes
 
-import . "github.com/tizian/tracer/tr"
+import . "github.com/tizian/GoTracer/tr"
 
 type Triangle struct {
 	v1, v2, v3 Vector3

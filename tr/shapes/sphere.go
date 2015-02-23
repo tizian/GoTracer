@@ -2,7 +2,7 @@ package shapes
 
 import (
 	"math"
-	. "github.com/tizian/tracer/tr"
+	. "github.com/tizian/GoTracer/tr"
 )
 
 type Sphere struct {
